@@ -471,6 +471,20 @@ def handle_summary(args: argparse.Namespace) -> None:
     else:
         print("No mood entries yet. Log one with 'mood log'.")
 
+    # --- Substance section ---
+    print("\n[SUBSTANCES]")
+    subs = data.get("substances", [])
+    if subs:
+        last = subs[-1]
+        print(f"Last substance: {last.get('name')} ({last.get('amount')})")
+        if last.get("feeling"):
+            print(f"Feeling: {last.get('feeling')}")
+        if last.get("outcome"):
+            print(f"Outcome: {last.get('outcome')}")
+        print(f"Logged at: {last.get('timestamp')}")
+    else:
+        print("No substances logged yet.")
+
 
 # --------- hemp ---------
 def handle_hemp(args: argparse.Namespace) -> None:
@@ -498,6 +512,7 @@ def handle_hemp(args: argparse.Namespace) -> None:
 def handle_substance(args: argparse.Namespace) -> None:
     data = load_data()
     entries: List[dict] = data["substances"]
+    ts = now_iso()
     entries.append(
         asdict(
             SubstanceEntry(
@@ -505,12 +520,12 @@ def handle_substance(args: argparse.Namespace) -> None:
                 amount=args.amount,
                 feeling=args.feeling or "",
                 outcome=args.outcome or "",
-                timestamp=now_iso(),
+                timestamp=ts,
             )
         )
     )
     save_data(data)
-    print(f"Logged {args.name} ({args.amount}).")
+    print(f"Logged {args.name} ({args.amount}) at {ts}.")
 
 
 # --------- CLI ---------
